@@ -9,10 +9,8 @@ import service.NoteService;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-/**
- * Editeur de note : reçoit note et sauve via NoteService
- */
 public class EditionController {
     @FXML private TextField champTitre;
     @FXML private TextArea champContenu;
@@ -27,7 +25,8 @@ public class EditionController {
         if (note != null) {
             champTitre.setText(note.getTitre());
             champContenu.setText(note.getContenu());
-            champTags.setText(String.join(";", note.getTags()));
+            // display tags as comma-separated for consistency with CSV
+            champTags.setText(note.getTagsAsString().replace(",", ";")); // friendly: show ; in UI
         }
     }
 
@@ -37,13 +36,13 @@ public class EditionController {
             noteActuelle.setTitre(champTitre.getText());
             noteActuelle.setContenu(champContenu.getText());
             String tagsRaw = champTags.getText();
-            Set<String> tags = new HashSet<>();
-            if (tagsRaw != null && !tagsRaw.trim().isEmpty()) {
-                Arrays.stream(tagsRaw.split(";")).map(String::trim).forEach(tags::add);
-            }
-            noteActuelle.setTags(tags);
+            // accept both ; and , as separators, normalize to comma for storage
+            if (tagsRaw == null) tagsRaw = "";
+            String normalized = tagsRaw.replace(';', ',');
+            // use Note helper to set tags from comma-separated string
+            noteActuelle.setTagsFromString(normalized);
             service.savenote(noteActuelle);
-            // TODO : fermer fenêtre / rafraichir liste
+            // TODO: fermer fenêtre / rafraichir liste (géré par caller)
         }
     }
 }

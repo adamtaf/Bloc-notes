@@ -3,16 +3,13 @@ package utils;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Helpers CSV minimalistes.
- */
 public final class CSVUtils {
     private CSVUtils(){}
 
-    public static String escapeForCsv(String s) {
+    public static String escapeForCsv(String s, char separator) {
         if (s == null) return "";
         String out = s.replace("\"", "\"\"");
-        if (out.contains(",") || out.contains("\"") || out.contains("\n")) {
+        if (out.indexOf(separator) >= 0 || out.contains("\"") || out.contains("\n") || out.contains("\r")) {
             return "\"" + out + "\"";
         }
         return out;
@@ -21,14 +18,13 @@ public final class CSVUtils {
     public static String unescapeFromCsv(String s) {
         if (s == null) return "";
         s = s.trim();
-        if (s.startsWith("\"") && s.endsWith("\"")) {
+        if (s.length() >= 2 && s.startsWith("\"") && s.endsWith("\"")) {
             s = s.substring(1, s.length()-1).replace("\"\"", "\"");
         }
         return s;
     }
 
-    public static String[] splitCsvLine(String line) {
-        // naive CSV splitter supporting quoted fields
+    public static String[] splitCsvLine(String line, char separator) {
         List<String> parts = new ArrayList<>();
         boolean inQuote = false;
         StringBuilder cur = new StringBuilder();
@@ -36,15 +32,16 @@ public final class CSVUtils {
             char c = line.charAt(i);
             if (c == '"') {
                 inQuote = !inQuote;
-                cur.append(c); // keep quotes so unescape can trim
-            } else if (c == ',' && !inQuote) {
-                parts.add(cur.toString().replaceAll("^\"|\"$", ""));
+                cur.append(c); // keep quotes for unescape
+            } else if (c == separator && !inQuote) {
+                parts.add(cur.toString());
                 cur.setLength(0);
             } else {
                 cur.append(c);
             }
         }
-        parts.add(cur.toString().replaceAll("^\"|\"$", ""));
+        parts.add(cur.toString());
+        // trim quotes will be handled by unescapeFromCsv by callers
         return parts.toArray(new String[0]);
     }
 }

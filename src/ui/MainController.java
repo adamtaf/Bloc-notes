@@ -11,6 +11,7 @@ import network.NoteClient;
 import service.NoteService;
 
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Controller principal minimal : crée, sauvegarde, supprime, recherche.
@@ -21,21 +22,42 @@ public class MainController {
     @FXML private TextField recherche;
 
     private NoteService service;
+    private CsvNoteDAO csvDao;
 
     public void initialize() {
         // initialisations : créer DAOs, network client, service
-        CsvNoteDAO csvDao = new CsvNoteDAO("data/notes.csv");
+        csvDao = new CsvNoteDAO("data/notes.csv");
         HibernateNoteDAO hibernateDao = new HibernateNoteDAO();
         NoteClient client = new NoteClient("localhost", 9000);
         service = new NoteService(csvDao, hibernateDao, client);
 
-        // TODO : charger metadata CSV dans listeNotes (service.getAllNotes)
+        // charger depuis CSV si présent
+        try {
+            List<Note> loaded = csvDao.importer();
+            service.loadFromCsv(loaded);
+            // remplir la liste UI
+            listeNotes.getItems().clear();
+            service.getAllNotes().forEach(n -> listeNotes.getItems().add(n));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // TODO : lier sélection pour afficher contenu
+        listeNotes.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
+            if (newV != null) {
+                zoneContenu.setText(newV.getContenu());
+            } else {
+                zoneContenu.clear();
+            }
+        });
     }
 
     @FXML
     public void onNouvelleNote() {
         Note n = service.createNote("Nouvelle note", "", new HashSet<>());
-        // TODO : rafraîchir UI et sélectionner la note
+        // rafraîchir UI et sélectionner la note
+        listeNotes.getItems().add(n);
+        listeNotes.getSelectionModel().select(n);
     }
 
     @FXML
@@ -44,7 +66,8 @@ public class MainController {
         if (selected != null) {
             selected.setContenu(zoneContenu.getText());
             service.savenote(selected); // conforme au diagramme de séquence
-            // TODO : rafraîchir UI
+            // rafraîchir l'affichage (ListView se mettra à jour si toString change)
+            listeNotes.refresh();
         }
     }
 
@@ -53,13 +76,14 @@ public class MainController {
         Note selected = listeNotes.getSelectionModel().getSelectedItem();
         if (selected != null) {
             service.deleteNote(selected.getId());
-            // TODO : rafraîchir UI
+            listeNotes.getItems().remove(selected);
         }
     }
 
     @FXML
     public void onRechercher() {
         String mot = recherche.getText();
-        // TODO : utiliser service.rechercherParMot(mot) et afficher résultats
+        listeNotes.getItems().clear();
+        service.rechercherParMot(mot).forEach(n -> listeNotes.getItems().add(n));
     }
 }

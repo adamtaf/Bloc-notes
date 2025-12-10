@@ -3,7 +3,9 @@ package network;
 import java.io.*;
 import java.net.Socket;
 
-
+/**
+ * Lit les messages entrants et renvoie une confirmation.
+ */
 public class ClientHandler implements Runnable {
     private final Socket socket;
     private final NoteServer server;
@@ -23,7 +25,8 @@ public class ClientHandler implements Runnable {
             in = new ObjectInputStream(socket.getInputStream());
             while (running && !socket.isClosed()) {
                 Object obj = in.readObject();
-
+                // TODO: traiter différents types (Note, commandes, etc.)
+                // Ici on répond simplement ACK
                 out.writeObject("CONFIRMATION");
                 out.flush();
             }

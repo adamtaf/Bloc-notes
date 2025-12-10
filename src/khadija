@@ -1,3 +1,24 @@
+package service;
+
+import dao.CsvNoteDAO;
+import model.Note;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Stream;
+
+public class NoteService {
+    private final List<Note> notesInMemory = new ArrayList<>();
+    private final Map<String, List<Note>> indexParTag = new HashMap<>();
+    private final ReentrantLock lock = new ReentrantLock();
+    private final AtomicLong idGen = new AtomicLong(1);
+
+    private final CsvNoteDAO csvDao;
+    private final Set<Long> dirty = new HashSet<>();
+
     public NoteService(CsvNoteDAO csvDao) throws IOException {
         this.csvDao = csvDao;
 

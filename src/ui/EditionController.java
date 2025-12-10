@@ -10,7 +10,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-
+/**
+ * Editeur de note : reçoit note et sauve via NoteService
+ */
 public class EditionController {
     @FXML private TextField champTitre;
     @FXML private TextArea champContenu;
@@ -41,6 +43,7 @@ public class EditionController {
             }
             noteActuelle.setTags(tags);
             service.savenote(noteActuelle);
+            // TODO : fermer fenêtre / rafraichir liste
         }
     }
 }

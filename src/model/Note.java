@@ -1,7 +1,6 @@
 package model;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -13,9 +12,6 @@ public class Note {
     private LocalDateTime dateCreation;
     private LocalDateTime dateModification;
     private Set<String> tags = new HashSet<>();
-
-    private static final DateTimeFormatter DATE_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public Note() {
         this.dateCreation = LocalDateTime.now();
@@ -41,46 +37,15 @@ public class Note {
     public void setContenu(String contenu) { this.contenu = contenu; touch(); }
 
     public LocalDateTime getDateCreation() { return dateCreation; }
-    public void setDateCreation(LocalDateTime creationDate) {this.dateCreation = creationDate;}
-
     public LocalDateTime getDateModification() { return dateModification; }
-    public void setDateModification(LocalDateTime modification) {this.dateModification = modification;}
 
     public Set<String> getTags() { return tags; }
     public void setTags(Set<String> tags) { this.tags = tags; touch(); }
 
-
     public void addTag(String tag) { this.tags.add(tag); touch(); }
     public void removeTag(String tag) { this.tags.remove(tag); touch(); }
 
-    public void touch() { this.dateModification = LocalDateTime.now(); }
-
-    public boolean hasTag(String tag) {
-        return this.tags.contains(tag.toLowerCase());
-    }
-
-    public String getTagsAsString() {
-        return String.join(",", tags);
-    }
-
-    public void setTagsFromString(String tagsString) {
-        this.tags.clear();
-        if (tagsString != null && !tagsString.trim().isEmpty()) {
-            String[] tagArray = tagsString.split(",");
-            for (String tag : tagArray) {
-                addTag(tag.trim());
-            }
-        }
-    }
-
-
-    public String getFormattedCreationDate() {
-        return dateCreation.format(DATE_FORMATTER);
-    }
-
-    public String getFormattedModificationDate() {
-        return dateModification.format(DATE_FORMATTER);
-    }
+    private void touch() { this.dateModification = LocalDateTime.now(); }
 
     @Override
     public String toString() {

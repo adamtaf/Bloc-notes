@@ -4,10 +4,13 @@ import model.Note;
 
 import java.util.List;
 
-
+/**
+ * Skeleton DAO for Hibernate. Implement using SessionFactory when ready.
+ */
 public class HibernateNoteDAO {
 
     public HibernateNoteDAO() {
+        // TODO: init SessionFactory if needed
     }
 
     public void save(Note note) {

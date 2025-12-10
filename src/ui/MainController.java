@@ -12,7 +12,9 @@ import service.NoteService;
 
 import java.util.HashSet;
 
-
+/**
+ * Controller principal minimal : crée, sauvegarde, supprime, recherche.
+ */
 public class MainController {
     @FXML private ListView<Note> listeNotes;
     @FXML private TextArea zoneContenu;
@@ -27,11 +29,13 @@ public class MainController {
         NoteClient client = new NoteClient("localhost", 9000);
         service = new NoteService(csvDao, hibernateDao, client);
 
+        // TODO : charger metadata CSV dans listeNotes (service.getAllNotes)
     }
 
     @FXML
     public void onNouvelleNote() {
         Note n = service.createNote("Nouvelle note", "", new HashSet<>());
+        // TODO : rafraîchir UI et sélectionner la note
     }
 
     @FXML
@@ -39,7 +43,8 @@ public class MainController {
         Note selected = listeNotes.getSelectionModel().getSelectedItem();
         if (selected != null) {
             selected.setContenu(zoneContenu.getText());
-            service.savenote(selected);
+            service.savenote(selected); // conforme au diagramme de séquence
+            // TODO : rafraîchir UI
         }
     }
 
@@ -48,11 +53,13 @@ public class MainController {
         Note selected = listeNotes.getSelectionModel().getSelectedItem();
         if (selected != null) {
             service.deleteNote(selected.getId());
+            // TODO : rafraîchir UI
         }
     }
 
     @FXML
     public void onRechercher() {
         String mot = recherche.getText();
+        // TODO : utiliser service.rechercherParMot(mot) et afficher résultats
     }
 }

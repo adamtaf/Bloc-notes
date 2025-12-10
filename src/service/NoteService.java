@@ -12,9 +12,16 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
+/**
+ * NoteService central :
+ * - conservation in-memory
+ * - indexation par tag
+ * - sauvegarde interne (savenote) -> CSV + DB + notification réseau
+ * - validation, checkModification
+ */
 public class NoteService {
     private final List<Note> notesInMemory = new ArrayList<>();
     private final Map<String, List<Note>> indexParTag = new HashMap<>();
@@ -25,6 +32,7 @@ public class NoteService {
     private final HibernateNoteDAO hibernateDao;
     private final NoteClient networkClient;
 
+    // Set of dirty note ids (modifiées depuis dernière sauvegarde)
     private final Set<Long> dirty = new HashSet<>();
 
     public NoteService(CsvNoteDAO csvDao, HibernateNoteDAO hibernateDao, NoteClient networkClient) {
@@ -33,6 +41,7 @@ public class NoteService {
         this.networkClient = networkClient;
     }
 
+    /* -------------- CRUD + validation -------------- */
 
     public Note createNote(String titre, String contenu, Set<String> tags) {
         lock.lock();
@@ -143,6 +152,7 @@ public class NoteService {
         }
     }
 
+    /* -------------- Validation / Dirty tracking -------------- */
 
     public boolean validateNote(Note note) {
         return note != null && note.getTitre() != null && !note.getTitre().trim().isEmpty();
@@ -161,11 +171,20 @@ public class NoteService {
         }
     }
 
+    /* -------------- Sauvegarde interne (savenote) -------------- */
 
+    /**
+     * Méthode décrite dans diagramme de séquence :
+     * - valide la note
+     * - écrit CSV
+     * - met à jour DB
+     * - notifie réseau
+     */
     public void savenote(Note note) {
         lock.lock();
         try {
             if (!validateNote(note)) throw new InvalidNoteException("Note invalide");
+            // Update/insert in-memory
             Optional<Note> existing = notesInMemory.stream().filter(n -> Objects.equals(n.getId(), note.getId())).findFirst();
             if (existing.isPresent()) {
                 Note ex = existing.get();
@@ -182,21 +201,27 @@ public class NoteService {
             lock.unlock();
         }
 
+        // Écrire CSV (outside lock to avoid long blocking)
         try {
             csvDao.exporterCatalogue(notesInMemory);
+            // Tentative d'enregistrement DB (silencieusement si non configuré)
             try {
                 hibernateDao.update(note);
             } catch (UnsupportedOperationException u) {
+                // Hibernate non configuré - ignorer ou logguer
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            // Envoyer mise à jour réseau et attendre confirmation
             try {
                 boolean ack = networkClient != null && networkClient.sendUpdate(note);
                 if (ack) {
+                    // on considère l'update propagé -> clear dirty flag for this note
                     lock.lock();
                     try { dirty.remove(note.getId()); } finally { lock.unlock(); }
                 }
             } catch (Exception e) {
+                // réseau KO -> on garde dirty pour prochaine sauvegarde automatique
                 e.printStackTrace();
             }
         } catch (IOException e) {
@@ -204,7 +229,7 @@ public class NoteService {
         }
     }
 
-
+    /* -------------- Index helpers -------------- */
     private void indexNote(Note n) {
         if (n.getTags() != null) {
             for (String t : n.getTags()) {

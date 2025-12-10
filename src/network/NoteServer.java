@@ -6,7 +6,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Serveur qui accepte clients et diffuse mises à jour.
+ */
 public class NoteServer {
     private ServerSocket serverSocket;
     private final List<ClientHandler> clients = new ArrayList<>();

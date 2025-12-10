@@ -3,7 +3,9 @@ package utils;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Helpers CSV minimalistes.
+ */
 public final class CSVUtils {
     private CSVUtils(){}
 
@@ -26,6 +28,7 @@ public final class CSVUtils {
     }
 
     public static String[] splitCsvLine(String line) {
+        // naive CSV splitter supporting quoted fields
         List<String> parts = new ArrayList<>();
         boolean inQuote = false;
         StringBuilder cur = new StringBuilder();
@@ -33,7 +36,7 @@ public final class CSVUtils {
             char c = line.charAt(i);
             if (c == '"') {
                 inQuote = !inQuote;
-                cur.append(c);
+                cur.append(c); // keep quotes so unescape can trim
             } else if (c == ',' && !inQuote) {
                 parts.add(cur.toString().replaceAll("^\"|\"$", ""));
                 cur.setLength(0);

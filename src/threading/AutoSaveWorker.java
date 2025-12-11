@@ -1,25 +1,46 @@
 package threading;
 
 import dao.CsvManager;
+import dao.HibernateNoteDAO;
 import service.NoteService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AutoSaveWorker implements Runnable {
     private final NoteService service;
-    private final CsvManager csvDao;
+    private final HibernateNoteDAO hibernateDao;
     private final long intervalMillis;
     private final AtomicBoolean running = new AtomicBoolean(true);
 
-    public AutoSaveWorker(NoteService service, CsvManager csvDao, long intervalMillis) {
+    public AutoSaveWorker(NoteService service, HibernateNoteDAO hibernateDao, long intervalMillis) {
         this.service = service;
-        this.csvDao = csvDao;
+        this.hibernateDao = hibernateDao;
         this.intervalMillis = intervalMillis;
     }
 
-    public void stop() { return;}
+
 
     @Override
     public void run() {
-        return;
+        while (running.get()) {
+            try {
+                hibernateDao.saveAll(service.getAllNotes());
+
+
+                Thread.sleep(intervalMillis);
+            } catch (InterruptedException e) {
+
+                Thread.currentThread().interrupt();
+                break;
+            } catch (Exception e) {
+
+                e.printStackTrace();
+            }
+        }
     }
+
+    public void stop() { running.set(false);}
+
+
+
+
 }

@@ -3,6 +3,7 @@ package dao;
 import model.Note;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class HibernateNoteDAO {
 
@@ -11,6 +12,9 @@ public class HibernateNoteDAO {
 
     public void save(Note note) {
         return;
+    }
+
+    public void saveAll(Stream<Note> notes) {
     }
 
     public void update(Note note) {

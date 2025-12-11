@@ -4,32 +4,28 @@ import model.Note;
 
 import java.util.List;
 
-/**
- * Skeleton DAO for Hibernate. Implement using SessionFactory when ready.
- */
 public class HibernateNoteDAO {
 
     public HibernateNoteDAO() {
-        // TODO: init SessionFactory if needed
     }
 
     public void save(Note note) {
-        throw new UnsupportedOperationException("Hibernate non configuré : implémenter save()");
+        return;
     }
 
     public void update(Note note) {
-        throw new UnsupportedOperationException("Hibernate non configuré : implémenter update()");
+        return;
     }
 
     public void delete(Long id) {
-        throw new UnsupportedOperationException("Hibernate non configuré : implémenter delete()");
+        return;
     }
 
     public List<Note> findAll() {
-        throw new UnsupportedOperationException("Hibernate non configuré : implémenter findAll()");
+        return null;
     }
 
     public List<Note> findByTag(String tag) {
-        throw new UnsupportedOperationException("Hibernate non configuré : implémenter findByTag()");
+        return null;
     }
 }

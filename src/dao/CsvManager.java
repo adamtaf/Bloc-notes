@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CsvManager {
     private String csvFilePath;
@@ -354,4 +355,39 @@ public class CsvManager {
     public long getFileSize() throws IOException {
         return Files.size(csvPath);
     }
+
+    //streams
+
+    public List<Note> findByTag(String tag) throws CsvException {
+        return readAllNotes().stream()
+                .filter(note -> note.getTags().contains(tag))
+                .collect(Collectors.toList());
+    }
+
+    public List<Note> findByDate(LocalDateTime date) throws CsvException {
+        return readAllNotes().stream()
+                .filter(note -> note.getDateCreation().isEqual(date))
+                .collect(Collectors.toList());
+    }
+
+    public List<Note> findByKeyword(String keyword) throws CsvException {
+        return readAllNotes().stream()
+                .filter(note -> note.getTitle().toLowerCase().contains(keyword.toLowerCase())
+                        || note.getContent().toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Note> sortByDate() throws CsvException {
+        return readAllNotes().stream()
+                .sorted(Comparator.comparing(Note::getDateCreation))
+                .collect(Collectors.toList());
+    }
+
+    public List<Note> sortByTitle() throws CsvException {
+        return readAllNotes().stream()
+                .sorted(Comparator.comparing(Note::getTitle))
+                .collect(Collectors.toList());
+    }
+
+
 }

@@ -258,7 +258,6 @@ public class CsvManager {
         }
     }
 
-
     public List<Note> importFromCsv(String sourceFilePath) throws CsvException {
         try {
             Path sourcePath = Paths.get(sourceFilePath);

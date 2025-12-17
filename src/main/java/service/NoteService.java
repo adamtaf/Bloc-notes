@@ -27,9 +27,30 @@ public class NoteService {
     }
 
 
+
+//create a note
     public Note createNote(String titre, String contenu, Set<String> tags) {
-        return null;
+        Note note = new Note();
+        note.setId(null);
+        note.setTags(tags);
+        note.setTitle(titre);
+        note.setContent(contenu);
+
+        return hibernateDao.save(note);
     }
+
+
+//read a note
+    public Note getById(Long id) {
+        return hibernateDao.getNote(id);
+    }
+
+//get all notes
+    public Stream<Note> getAllNotes() {
+        return hibernateDao.findAll().stream();
+    }
+
+
 
     public void updateNote(Note updated) {
         return;
@@ -39,13 +60,6 @@ public class NoteService {
         return;
     }
 
-    public Note getById(Long id) {
-        return null;
-    }
-
-    public Stream<Note> getAllNotes() {
-        return null;
-    }
 
 
     private void saveCsv() {

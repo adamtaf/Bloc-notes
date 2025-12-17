@@ -1,17 +1,35 @@
 package dao;
 
 import model.Note;
-
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class HibernateNoteDAO {
 
-    public HibernateNoteDAO() {
+    private final SessionFactory sessionFactory;
+
+
+    public HibernateNoteDAO( SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
-    public void save(Note note) {
-        return;
+    public Note save(Note note) {
+        Session session = sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+        session.persist(note);
+        tx.commit();
+        session.close();
+        return note;
+    }
+
+    public Note getNote(Long id) {
+        Session session = sessionFactory.openSession();
+        Note note = session.find(Note.class, id);
+        session.close();
+        return note;
     }
 
     public void saveAll(Stream<Note> notes) {
@@ -26,7 +44,11 @@ public class HibernateNoteDAO {
     }
 
     public List<Note> findAll() {
-        return null;
+        Session session = sessionFactory.openSession();
+        List<Note> notes = session.createQuery("from Note", Note.class).list();
+        session.close();
+        return notes;
+
     }
 
     public List<Note> findByTag(String tag) {

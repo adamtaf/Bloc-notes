@@ -1,19 +1,25 @@
 package model;
 
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
-
+@Entity
+@Table(name = "notes")
 public class Note implements Serializable {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String content;
     private LocalDateTime dateCreation;
     private LocalDateTime dateModification;
+
+    @ElementCollection
     private Set<String> tags = new HashSet<>();
 
     private static final DateTimeFormatter FMT =

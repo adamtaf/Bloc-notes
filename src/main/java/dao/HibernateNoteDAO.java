@@ -35,13 +35,27 @@ public class HibernateNoteDAO {
     public void saveAll(Stream<Note> notes) {
     }
 
-    public void update(Note note) {
-        return;
-    }
 
-    public void delete(Long id) {
-        return;
-    }
+        public void update(Note note) {
+            Session session = sessionFactory.openSession();
+            Transaction tx = session.beginTransaction();
+            session.merge(note);
+            tx.commit();
+            session.close();
+        }
+
+        public void delete(Long id) {
+            Session session = sessionFactory.openSession();
+            Transaction tx = session.beginTransaction();
+            Note note = session.find(Note.class, id);
+            if (note != null) {
+                session.remove(note);
+            }
+            tx.commit();
+            session.close();
+        }
+
+
 
     public List<Note> findAll() {
         Session session = sessionFactory.openSession();

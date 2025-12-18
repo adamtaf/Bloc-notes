@@ -7,14 +7,13 @@ import org.hibernate.Transaction;
 import java.util.List;
 import java.util.stream.Stream;
 
+
 public class HibernateNoteDAO {
 
-    private final SessionFactory sessionFactory;
+
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
 
-    public HibernateNoteDAO( SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
 
     public Note save(Note note) {
         Session session = sessionFactory.openSession();

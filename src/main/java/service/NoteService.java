@@ -51,14 +51,24 @@ public class NoteService {
     }
 
 
+    public Note updateNote(Long id, String newTitle, String newContent, Set<String> newTags) throws Exception {
+        Note existing = hibernateDao.getNote(id);
+        if (existing == null) throw new IllegalArgumentException("Note not found: " + id);
 
-    public void updateNote(Note updated) {
-        return;
+        if (newTitle != null) existing.setTitle(newTitle);
+        if (newContent != null) existing.setContent(newContent);
+        if (newTags != null) existing.setTags(newTags);
+
+        existing.touch();
+        hibernateDao.update(existing);
+        return existing;
     }
 
-    public void deleteNote(Long id) {
-        return;
+    // delete a note
+    public void deleteNote(Long id) throws Exception {
+        hibernateDao.delete(id);
     }
+
 
 
 

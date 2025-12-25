@@ -9,11 +9,11 @@ import java.util.stream.Stream;
 
 public class HibernateNoteDAO {
 
-    private final SessionFactory sessionFactory;
+    private SessionFactory sessionFactory;
 
 
-    public HibernateNoteDAO( SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+    public HibernateNoteDAO() {
+        this.sessionFactory = HibernateUtil.getSessionFactory(); //douaa
     }
 
     public Note save(Note note) {

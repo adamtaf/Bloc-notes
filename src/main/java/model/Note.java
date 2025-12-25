@@ -19,8 +19,12 @@ public class Note implements Serializable {
     private LocalDateTime dateCreation;
     private LocalDateTime dateModification;
 
-    @ElementCollection
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "note_tags", joinColumns = @JoinColumn(name = "note_id"))
+    @Column(name = "tag")
     private Set<String> tags = new HashSet<>();
+
 
     private static final DateTimeFormatter FMT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

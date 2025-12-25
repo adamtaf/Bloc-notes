@@ -11,6 +11,11 @@ public class NoteClient {
         this.port = port;
     }
 
+    public NoteClient() {
+        host = "localhost";
+        port = 8080;
+    }
+
 
     public boolean sendUpdate(Note note) {
         return true;

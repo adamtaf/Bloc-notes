@@ -12,6 +12,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 public class CsvManager {
     private String csvFilePath;
     private Path csvPath;
@@ -22,23 +23,38 @@ public class CsvManager {
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public CsvManager(String csvFilePath) throws CsvException {
+        if (csvFilePath == null || csvFilePath.isBlank()) {
+            throw new CsvException("Le chemin du fichier CSV ne peut pas être vide");
+        }
+
         this.csvFilePath = csvFilePath;
-        this.csvPath = Paths.get(csvFilePath);
+        this.csvPath = Paths.get(csvFilePath).toAbsolutePath(); //douaa
+
         initializeCsvFile();
     }
 
+    //douaa
     private void initializeCsvFile() throws CsvException {
         try {
             if (!Files.exists(csvPath)) {
-                Files.createDirectories(csvPath.getParent());
-                try (BufferedWriter writer = Files.newBufferedWriter(csvPath)) {
+                Path parentDir = csvPath.getParent();
+                if (parentDir != null && !Files.exists(parentDir)) {
+                    Files.createDirectories(parentDir);
+                    System.out.println("Dossier créé: " + parentDir);
+                }
+
+                // creer le fichier csv
+                try (BufferedWriter writer = Files.newBufferedWriter(csvPath, StandardOpenOption.CREATE_NEW)) {
                     writer.write(CSV_HEADER);
                     writer.newLine();
                 }
-                System.out.println("Fichier CSV créé: " + csvFilePath);
+
+                System.out.println("Fichier CSV créé: " + csvPath);
+            } else {
+                System.out.println("Fichier CSV déjà existant: " + csvPath);
             }
         } catch (IOException e) {
-            throw new CsvException("Impossible de créer le fichier CSV", e);
+            throw new CsvException("Impossible de créer le fichier CSV: " + csvPath, e);
         }
     }
 
@@ -52,7 +68,7 @@ public class CsvManager {
             while ((line = reader.readLine()) != null) {
                 if (isFirstLine) {
                     isFirstLine = false;
-                    continue; // Skip header
+                    continue;
                 }
 
                 if (!line.trim().isEmpty()) {
@@ -115,15 +131,12 @@ public class CsvManager {
 
     public void writeAllNotes(List<Note> notes) throws CsvException {
         try {
-            // Créer un fichier temporaire
             Path tempFile = Files.createTempFile("notes", ".csv.tmp");
 
             try (BufferedWriter writer = Files.newBufferedWriter(tempFile)) {
-                // Écrire l'en-tête
                 writer.write(CSV_HEADER);
                 writer.newLine();
 
-                // Écrire chaque note
                 for (Note note : notes) {
                     String csvLine = convertNoteToCsvLine(note);
                     writer.write(csvLine);
@@ -167,24 +180,13 @@ public class CsvManager {
     public void addNote(Note note) throws CsvException {
         try {
             List<Note> notes = readAllNotes();
-
-            if (note.getId() == null) {
-                Long maxId = notes.stream()
-                        .map(Note::getId)
-                        .filter(Objects::nonNull)
-                        .max(Long::compare)
-                        .orElse(0L);
-                note.setId(maxId + 1);
-            }
-
             notes.add(note);
-
             writeAllNotes(notes);
-
-        } catch (CsvException e) {
+        } catch (Exception e) {
             throw new CsvException("Impossible d'ajouter la note", e);
         }
     }
+
 
     public void updateNote(Note updatedNote) throws CsvException {
         try {

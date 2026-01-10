@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ui.EditionController"
+            stylesheets="@style.css">
+
+    <top>
+        <HBox spacing="10" styleClass="editor-bar">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Button text="Retour" styleClass="btn-back" onAction="#onRetour"/>
+            <Button text="Sauvegarder" styleClass="btn-back" onAction="#onSauvegarde"/>
+            <Button text="Supprimer" styleClass="btn-back" onAction="#onSupprimer"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+
+            <TextField fx:id="champTitre" styleClass="editor-title" promptText="Titre de la note"/>
+            <TextArea fx:id="zoneContenu" styleClass="editor-content" promptText="Contenu de la note..."/>
+
+            <!-- ===== Partie Tags ===== -->
+            <Label text="Tags :" style="-fx-font-weight: bold;"/>
+            <HBox spacing="10">
+                <TextField fx:id="champTag" promptText="Ajouter un tag"/>
+                <Button text="Ajouter" onAction="#onAjouterTag"/>
+                <Button text="Supprimer" onAction="#onSupprimerTag"/>
+            </HBox>
+            <ListView fx:id="listeTags" prefHeight="100" />
+
+        </VBox>
+    </center>
+
+
+</BorderPane>

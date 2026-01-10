@@ -17,26 +17,21 @@ public class AutoSaveWorker implements Runnable {
         this.intervalMillis = intervalMillis;
     }
 
-
-
     @Override
     public void run() {
         while (running.get()) {
             try {
-                hibernateDao.saveAll(service.getAllNotes());
-
-
+                if (service.hasChanges()) {
+                    service.saveCsv();
+                }
                 Thread.sleep(intervalMillis);
             } catch (InterruptedException e) {
-
                 Thread.currentThread().interrupt();
                 break;
-            } catch (Exception e) {
-
-                e.printStackTrace();
             }
         }
     }
+
 
     public void stop() { running.set(false);}
 

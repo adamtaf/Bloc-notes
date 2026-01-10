@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ui.CsvController"
+            stylesheets="@style.css"
+            styleClass="root">
+
+    <top>
+        <HBox spacing="10" styleClass="top-bar">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Button fx:id="btnImportCsv" text="Importer note" styleClass="button"/>
+            <Button fx:id="btnExportCsv" text="Exporter note" styleClass="button"/>
+            <Button fx:id="btnRetour" text="Retour" styleClass="button"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+            <Label text="Liste des notes" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <ListView fx:id="listeNotes" styleClass="list-view" prefHeight="400"/>
+        </VBox>
+    </center>
+
+</BorderPane>

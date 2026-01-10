@@ -13,7 +13,7 @@ public class HibernateNoteDAO {
 
 
     public HibernateNoteDAO() {
-        this.sessionFactory = HibernateUtil.getSessionFactory(); //douaa
+        this.sessionFactory = HibernateUtil.getSessionFactory();
     }
 
     public Note save(Note note) {
@@ -35,8 +35,7 @@ public class HibernateNoteDAO {
     public void saveAll(Stream<Note> notes) {
     }
 
-
-        public void update(Note note) {
+    public void update(Note note) {
             Session session = sessionFactory.openSession();
             Transaction tx = session.beginTransaction();
             session.merge(note);
@@ -55,9 +54,7 @@ public class HibernateNoteDAO {
             session.close();
         }
 
-
-
-    public List<Note> findAll() {
+        public List<Note> findAll() {
         Session session = sessionFactory.openSession();
         List<Note> notes = session.createQuery("from Note", Note.class).list();
         session.close();

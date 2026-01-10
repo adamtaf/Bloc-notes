@@ -3,28 +3,30 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ui.MainController">
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ui.MainController"
+            stylesheets="@style.css">
 
     <top>
-        <HBox spacing="10">
+        <HBox spacing="10" styleClass="top-bar">
             <padding>
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
-            <Button text="Nouvelle note" onAction="#onNouvelleNote"/>
-            <Button text="Sauvegarder" onAction="#onSauvegarde"/>
-            <Button text="Supprimer" onAction="#onSupprimer"/>
-            <Button fx:id="btnImportCsv" text="importer CSV"/>
-            <Button fx:id="btnExportCsv" text="exporter CSV"/>
-            <TextField fx:id="recherche" promptText="Recherche..."/>
+
+            <Button text="➕ Nouvelle note" onAction="#onNouvelleNote"/>
+            <Button text="🏷 Tags / Filtres" onAction="#onOpenFilterScene"/>
+            <Button text="Tout afficher" onAction="#onAfficherTout"/>
+            <Button text="📂 Import / Export CSV" onAction="#onOpenImportExportScene"/>
+
+            <TextField fx:id="recherche" promptText="Rechercher une note..."/>
+
         </HBox>
     </top>
 
     <center>
-        <SplitPane>
-            <ListView fx:id="listeNotes" prefWidth="200"/>
-            <TextArea fx:id="zoneContenu"/>
-        </SplitPane>
+        <ListView fx:id="listeNotes"/>
     </center>
 
 </BorderPane>
+

@@ -68,14 +68,6 @@ public class Note implements Serializable {
         touch();
     }
 
-    public void addTag(String tag) {
-
-    }
-
-    public void removeTag(String tag) {
-
-    }
-
 
     public String getTagsAsString() {
         return  String.join(", ", tags);

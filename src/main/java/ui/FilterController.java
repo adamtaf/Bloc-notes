@@ -36,7 +36,9 @@ public class FilterController {
                 onRetour();
             }
         });
+
     }
+
 
     @FXML
     private void onRetour() {

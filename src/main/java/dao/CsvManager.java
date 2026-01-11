@@ -97,27 +97,26 @@ public class CsvManager {
         try {
             String[] parts = line.split(CSV_SEPARATOR, -1);
 
-            if (parts.length < 6) {
+            if (parts.length < 5) {
                 throw new FileCorruptedException(csvFilePath,
                         new IllegalArgumentException("Ligne CSV incomplète: " + line));
             }
 
             Long id = parts[0].isEmpty() ? null : Long.parseLong(parts[0]);
             String title = parts[1];
-            String content = parts[2];
 
-            LocalDateTime creationDate = parts[3].isEmpty() ?
+            LocalDateTime creationDate = parts[2].isEmpty() ?
                     LocalDateTime.now() :
+                    LocalDateTime.parse(parts[2], DATE_FORMATTER);
+
+            LocalDateTime modificationDate = parts[3].isEmpty() ?
+                    creationDate :
                     LocalDateTime.parse(parts[3], DATE_FORMATTER);
 
-            LocalDateTime modificationDate = parts[4].isEmpty() ?
-                    creationDate :
-                    LocalDateTime.parse(parts[4], DATE_FORMATTER);
+            Note note = new Note(id, title, "", creationDate, modificationDate); // content vide
 
-            Note note = new Note(id, title, content, creationDate, modificationDate);
-
-            if (!parts[5].isEmpty()) {
-                note.setTagsFromString(parts[5]);
+            if (!parts[4].isEmpty()) {
+                note.setTagsFromString(parts[4]);
             }
 
             return note;
@@ -158,9 +157,11 @@ public class CsvManager {
 
         parts[0] = note.getId() != null ? note.getId().toString() : "";
         parts[1] = escapeCsvField(note.getTitle());
-        parts[2] = escapeCsvField(note.getContent());
-        parts[3] = note.getFormattedCreationDate();
-        parts[4] = note.getFormattedModificationDate();
+        parts[2] = note.getFormattedCreationDate();
+        parts[3] = note.getFormattedModificationDate();
+        parts[4] = escapeCsvField(String.join(",", note.getTags()));
+
+
 
         return String.join(CSV_SEPARATOR, parts);
     }
@@ -373,8 +374,7 @@ public class CsvManager {
 
     public List<Note> findByKeyword(String keyword) throws CsvException {
         return readAllNotes().stream()
-                .filter(note -> note.getTitle().toLowerCase().contains(keyword.toLowerCase())
-                        || note.getContent().toLowerCase().contains(keyword.toLowerCase()))
+                .filter(note -> note.getTitle().toLowerCase().contains(keyword.toLowerCase()))
                 .collect(Collectors.toList());
     }
 

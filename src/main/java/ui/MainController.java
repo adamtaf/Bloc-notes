@@ -40,12 +40,13 @@ public class MainController {
         NoteClient networkClient = new NoteClient();
         service = new NoteService(csvManager, hibernateDao, networkClient);
 
-        //chargement init des notes
-        //on transforme le flux stream en ObservableList pour que la ListView soit reactive
-        notesObservable = FXCollections.observableArrayList(
-                service.getAllNotes().collect(Collectors.toList())
-        );
+        //initialisation de l'observable list
+        notesObservable = FXCollections.observableArrayList();
         listeNotes.setItems(notesObservable);
+
+        //charger toutes les notes
+        service.loadNotes();
+        notesObservable.setAll(service.getAllNotes().toList());
 
         // Recherche dynamique
         //on filtre toutes les notes et on ne garde que celles avec le texte qu on veut
@@ -69,10 +70,6 @@ public class MainController {
                 }
             }
         });
-
-
-        service.loadNotes();
-        listeNotes.setItems(service.getNotesObservable());
 
         //sauvegarde toutes les 1 secondes
         AutoSaveWorker worker = new AutoSaveWorker(service, hibernateDao, 1000);
@@ -120,6 +117,7 @@ public class MainController {
                         .collect(Collectors.toList())
         );
     }
+
 
     @FXML
     private void onAfficherTout() {

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Entity
 @Table(name = "notes")
@@ -20,6 +21,8 @@ public class Note implements Serializable {
     private LocalDateTime dateModification;
     @Transient
     private boolean dirty = false;
+    @Transient
+    private final ReentrantLock lock = new ReentrantLock();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "note_tags", joinColumns = @JoinColumn(name = "note_id"))
@@ -44,6 +47,10 @@ public class Note implements Serializable {
         this.dateModification = dateModification;
     }
 
+
+    public ReentrantLock getLock() {
+        return lock;
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; touch(); }
@@ -88,8 +95,15 @@ public class Note implements Serializable {
     }
 
     public void setTagsFromString(String s) {
-        return;
+        tags.clear();
+        if (s == null || s.isBlank()) return;
+
+        String[] parts = s.split(",");
+        for (String t : parts) {
+            tags.add(t.trim());
+        }
     }
+
 
     public void touch() {
         this.dateModification = LocalDateTime.now();

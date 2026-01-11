@@ -19,8 +19,6 @@ import org.hibernate.Transaction;
 
 public class NoteService {
 
-    private final ReentrantLock lock = new ReentrantLock();
-    private final AtomicLong idGen = new AtomicLong(1);
 
     private final CsvManager csvManager;
     private final HibernateNoteDAO hibernateDao;
@@ -33,7 +31,6 @@ public class NoteService {
         this.hibernateDao = hibernateDao;
         this.networkClient = networkClient;
     }
-
 
 
 //create a note
@@ -118,7 +115,7 @@ public class NoteService {
         saveCsv();
         markDirty();
         hibernateDao.delete(id);
-        notesObservable.remove(id);
+        notesObservable.removeIf(n -> n.getId().equals(id));
     }
 
     public boolean hasChanges() { //pour verifier si on a u des modifs apres la sauvegarde
@@ -161,8 +158,14 @@ public class NoteService {
                 managed.setTitle(note.getTitle());
                 managed.setContent(note.getContent());
 
-                managed.getTags().clear();
-                managed.getTags().addAll(new HashSet<>(note.getTags()));
+                note.getLock().lock();
+                try {
+                    managed.getTags().clear();
+                    managed.getTags().addAll(note.getTags());
+                } finally {
+                    note.getLock().unlock();
+                }
+
 
                 managed.touch();
             }

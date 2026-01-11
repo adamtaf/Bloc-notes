@@ -23,17 +23,25 @@ public class AutoSaveWorker implements Runnable {
         while (running.get()) {
             try {
                 for (Note note : service.getNotesObservable()) {
-                    if (note.isDirty()) {
-                        service.saveOrUpdate(note);
-                        note.setDirty(false);
+                    //verrouiller chaque note lors de la modif, afin qu un seul thread fasse des changements
+                    note.getLock().lock();
+                    try {
+                        if (note.isDirty()) {
+                            service.saveOrUpdate(note);  //sauvegarde dans hibernate et CSV
+                            note.setDirty(false);
+                        }
+                    } finally {
+                        note.getLock().unlock();        //liberer le lock
                     }
                 }
-                Thread.sleep(intervalMillis);
+
+                Thread.sleep(intervalMillis); //pause entre sauvegardes
             } catch (InterruptedException e) {
-                break;
+                break; //pour arreter le thread (interrompu par exp)
             }
         }
     }
+
     public void stop() { running.set(false);}
 
 

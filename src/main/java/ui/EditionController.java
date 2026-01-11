@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 import model.Note;
 import service.NoteService;
 
+import java.util.HashSet;
+
 public class EditionController {
 
     @FXML private TextField champTitre;
@@ -18,10 +20,9 @@ public class EditionController {
     @FXML private TextField champTag;
     @FXML private ListView<String> listeTags;
 
+    private Note currentNote;
     private Note note;
     private NoteService service;
-
-
 
 
     public void init(Note note, NoteService service) {
@@ -40,6 +41,14 @@ public class EditionController {
                 champTag.setText(tag);
             }
         });
+        champTitre.textProperty().addListener((obs, oldV, newV) -> {
+            note.setTitle(newV);
+        });
+
+        zoneContenu.textProperty().addListener((obs, oldV, newV) -> {
+            note.setContent(newV);
+        });
+
 
     }
 
@@ -80,7 +89,9 @@ public class EditionController {
 
 
             if (!note.getTags().contains(nouveauTag)) {
+                note.setTags(new HashSet<>(note.getTags()));
                 note.getTags().add(nouveauTag);
+                note.setDirty(true);
             }
 
             if (!listeTags.getItems().contains(nouveauTag)) {

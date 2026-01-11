@@ -71,21 +71,26 @@ public class MainController {
         });
 
 
-        //sauvegarde toutes les 5 secondes
-        AutoSaveWorker worker = new AutoSaveWorker(service, hibernateDao, 5000);
-        Thread autoSaveThread = new Thread(worker);
-        autoSaveThread.setDaemon(true);
-        autoSaveThread.start();
+        service.loadNotes();
+        listeNotes.setItems(service.getNotesObservable());
+
+        //sauvegarde toutes les 1 secondes
+        AutoSaveWorker worker = new AutoSaveWorker(service, hibernateDao, 1000);
+        new Thread(worker).start();
 
     }
 
 
     @FXML
     public void onNouvelleNote() {
+        //creee la note et la recupere
         Note note = service.createNote("Nouvelle note", "", new HashSet<>());
-        notesObservable.add(note);
-        openEditor(note);   // ouvre directement la scene d edition
+
+        if (note != null) {
+            openEditor(note);
+        }
     }
+
 
     @FXML
     public void onSauvegarde() throws CsvException {
@@ -142,14 +147,14 @@ public class MainController {
         Stage stage = new Stage();
         Scene scene = new Scene(loader.load());
 
-
         CsvController controller = loader.getController();
-        controller.init(service);
+        controller.init(service, this);
 
         stage.setScene(scene);
         stage.setTitle("Import / Export CSV");
         stage.show();
     }
+
 
     public void refreshNotes(List<Note> nouvellesNotes) {
         notesObservable.setAll(nouvellesNotes);

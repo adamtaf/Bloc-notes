@@ -2,6 +2,7 @@ package threading;
 
 import dao.CsvManager;
 import dao.HibernateNoteDAO;
+import model.Note;
 import service.NoteService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,18 +22,18 @@ public class AutoSaveWorker implements Runnable {
     public void run() {
         while (running.get()) {
             try {
-                if (service.hasChanges()) {
-                    service.saveCsv();
+                for (Note note : service.getNotesObservable()) {
+                    if (note.isDirty()) {
+                        service.saveOrUpdate(note);
+                        note.setDirty(false);
+                    }
                 }
                 Thread.sleep(intervalMillis);
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
                 break;
             }
         }
     }
-
-
     public void stop() { running.set(false);}
 
 

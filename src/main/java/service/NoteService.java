@@ -4,6 +4,8 @@ import dao.CsvManager;
 import dao.HibernateUtil;
 import exceptions.CsvException;
 import dao.HibernateNoteDAO;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import model.Note;
 import network.NoteClient;
 import java.util.*;
@@ -23,6 +25,8 @@ public class NoteService {
     private final CsvManager csvManager;
     private final HibernateNoteDAO hibernateDao;
     private final NoteClient networkClient;
+    private final ObservableList<Note> notesObservable = FXCollections.observableArrayList();
+
 
     public NoteService(CsvManager csvManager, HibernateNoteDAO hibernateDao, NoteClient networkClient) {
         this.csvManager = csvManager;
@@ -37,29 +41,39 @@ public class NoteService {
         Note note = new Note();
         note.setTitle(title);
         note.setContent(content);
-        note.setTags(tags);
+        note.setTags(new HashSet<>(tags));
 
-        Transaction tx = null; //pour stocker la transaction
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) { //on ouvre une session Hibernate
-            tx = session.beginTransaction(); //on demarre une transaction
-            session.persist(note); //comme un insert
-            tx.commit(); //valider
+        Transaction tx = null;
+        Note savedNote = null;
 
+        //session Hibernate pour creer ou mettre a jour la note
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        tx = session.beginTransaction();
+
+        // merge gere les nouvelles notes et celles deja existantes
+        savedNote = (Note) session.merge(note);
+
+        tx.commit();
         } catch (Exception e) {
-            if (tx != null) tx.rollback();
+            if (tx != null && tx.isActive()) tx.rollback();
             e.printStackTrace();
             return null;
         }
-
+        //sauvegarde dans le CSV
         try {
-            csvManager.addNote(note);
+            csvManager.addNote(savedNote);
         } catch (CsvException e) {
             e.printStackTrace();
         }
 
+        //pour marquer la note comme modifiee
         markDirty();
+        //pour mettre a jour la liste
+        notesObservable.add(savedNote);
+        //sauveg du csv
         saveCsv();
-        return note;
+
+        return savedNote;
     }
 
 
@@ -70,7 +84,10 @@ public class NoteService {
 
     //get all notes
     public Stream<Note> getAllNotes() {
-        return hibernateDao.findAll().stream();
+        return notesObservable.stream();
+    }
+    public ObservableList<Note> getNotesObservable() {
+        return notesObservable;
     }
 
 
@@ -83,7 +100,8 @@ public class NoteService {
 
         if (newTags != null) {
             existing.getTags().clear();
-            existing.getTags().addAll(newTags);
+            existing.getTags().addAll(new HashSet<>(newTags));
+
         } //remplacer les anciens tags avc les nvs
 
         existing.touch(); //met a jour la date de la derniere date de modif
@@ -100,6 +118,7 @@ public class NoteService {
         saveCsv();
         markDirty();
         hibernateDao.delete(id);
+        notesObservable.remove(id);
     }
 
     public boolean hasChanges() { //pour verifier si on a u des modifs apres la sauvegarde
@@ -117,6 +136,11 @@ public class NoteService {
             e.printStackTrace();
         }
     }
+    public void loadNotes() {
+        notesObservable.clear();
+        notesObservable.addAll(hibernateDao.getAllNotes());
+    }
+
 
     private volatile boolean needsSave = false; //pour savoir si on a des changement a sauvegarder ou nn
     //volatile pour que les changements soient visibles par les threads
@@ -125,25 +149,32 @@ public class NoteService {
         needsSave = true;
     } //pour sauvegarder les modifs
 
-    public void saveOrUpdate(Note note) { //insert et update
-        if (note == null) return;
-
+    public void saveOrUpdate(Note note) {
         Transaction tx = null;
+
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
 
-            //pour gerer les 2 cas note existante ou pas
-            session.merge(note);
+            Note managed = session.find(Note.class, note.getId());
+
+            if (managed != null) {
+                managed.setTitle(note.getTitle());
+                managed.setContent(note.getContent());
+
+                managed.getTags().clear();
+                managed.getTags().addAll(new HashSet<>(note.getTags()));
+
+                managed.touch();
+            }
 
             tx.commit();
         } catch (Exception e) {
-            if (tx != null) tx.rollback();
+            if (tx != null && tx.isActive()) tx.rollback();
             e.printStackTrace();
         }
 
         saveCsv();
     }
-
 
     public Set<String> getAllTags() { //pour recuperer tous les tags existants
         return getAllNotes() //stream pour les notes

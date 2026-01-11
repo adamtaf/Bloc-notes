@@ -18,7 +18,8 @@ public class Note implements Serializable {
     private String content;
     private LocalDateTime dateCreation;
     private LocalDateTime dateModification;
-
+    @Transient
+    private boolean dirty = false;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "note_tags", joinColumns = @JoinColumn(name = "note_id"))
@@ -51,8 +52,17 @@ public class Note implements Serializable {
     public String getTitle() { return title; }
     public String getContent() { return content; }
 
-    public void setTitle(String title) { this.title = title; }
-    public void setContent(String content) { this.content = content; }
+    public void setTitle(String title) {
+        this.title = title;
+        this.dirty = true;
+        touch();
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+        this.dirty = true;
+        touch();
+    }
 
 
     public LocalDateTime getDateCreation() { return dateCreation; }
@@ -64,10 +74,14 @@ public class Note implements Serializable {
     public Set<String> getTags() { return tags; }
 
     public void setTags(Set<String> tags) {
-        this.tags = tags != null ? tags : new HashSet<>();
+        this.tags.clear();
+        if (tags != null) this.tags.addAll(tags);
+        this.dirty = true;
         touch();
     }
 
+    public boolean isDirty() { return dirty; }
+    public void setDirty(boolean dirty) { this.dirty = dirty; }
 
     public String getTagsAsString() {
         return  String.join(", ", tags);
@@ -85,4 +99,7 @@ public class Note implements Serializable {
     public String toString() {
         return title + " (" + id + ")";
     }
+
+
+
 }

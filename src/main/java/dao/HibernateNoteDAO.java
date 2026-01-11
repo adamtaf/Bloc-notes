@@ -25,6 +25,13 @@ public class HibernateNoteDAO {
         return note;
     }
 
+
+    public List<Note> getAllNotes() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("from Note", Note.class).list();
+        }
+    }
+
     public Note getNote(Long id) {
         Session session = sessionFactory.openSession();
         Note note = session.find(Note.class, id);

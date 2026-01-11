@@ -19,10 +19,13 @@ public class CsvController {
     @FXML private Button btnExportCsv;
     @FXML private Button btnRetour;
     private NoteService service;
+    private MainController mainController;
 
-    public void init(NoteService service) {
+
+    public void init(NoteService service, MainController mainController) {
         this.service = service;
         listeNotes.getItems().setAll(service.getAllNotes().toList());
+        this.mainController = mainController;
 
         btnImportCsv.setOnAction(e -> importerNote());
         btnExportCsv.setOnAction(e -> exporterNote());
@@ -46,6 +49,7 @@ public class CsvController {
                 e.printStackTrace();
             }
         }
+        mainController.refreshNotes(service.getAllNotes().toList());
     }
 
 

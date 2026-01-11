@@ -17,7 +17,8 @@ public class CsvManager {
     private String csvFilePath;
     private Path csvPath;
     private static final String CSV_SEPARATOR = ";";
-    private static final String CSV_HEADER = "ID;TITLE;CONTENT;CREATION_DATE;MODIFICATION_DATE;TAGS";
+    private static final String CSV_HEADER = "ID;TITLE;CREATION_DATE;MODIFICATION_DATE;TAGS";
+
 
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -153,14 +154,13 @@ public class CsvManager {
 
 
     private String convertNoteToCsvLine(Note note) {
-        String[] parts = new String[6];
+        String[] parts = new String[5];
 
         parts[0] = note.getId() != null ? note.getId().toString() : "";
         parts[1] = escapeCsvField(note.getTitle());
         parts[2] = escapeCsvField(note.getContent());
         parts[3] = note.getFormattedCreationDate();
         parts[4] = note.getFormattedModificationDate();
-        parts[5] = escapeCsvField(note.getTagsAsString());
 
         return String.join(CSV_SEPARATOR, parts);
     }

@@ -152,22 +152,20 @@ public class NoteService {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
 
-            Note managed = session.find(Note.class, note.getId());
+            Note managed;
 
-            if (managed != null) {
-                managed.setTitle(note.getTitle());
-                managed.setContent(note.getContent());
-
-                note.getLock().lock();
-                try {
+            if (note.getId() == null) {
+                managed = (Note) session.merge(note);
+                notesObservable.add(managed);
+            } else {
+                managed = session.find(Note.class, note.getId());
+                if (managed != null) {
+                    managed.setTitle(note.getTitle());
+                    managed.setContent(note.getContent());
                     managed.getTags().clear();
                     managed.getTags().addAll(note.getTags());
-                } finally {
-                    note.getLock().unlock();
+                    managed.touch();
                 }
-
-
-                managed.touch();
             }
 
             tx.commit();
@@ -178,6 +176,7 @@ public class NoteService {
 
         saveCsv();
     }
+
 
     public Set<String> getAllTags() { //pour recuperer tous les tags existants
         return getAllNotes() //stream pour les notes

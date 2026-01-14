@@ -35,21 +35,28 @@ public class CsvController {
     private void importerNote() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Importer une note");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("CSV Files", "*.csv")
+        );
+
         File file = fileChooser.showOpenDialog(listeNotes.getScene().getWindow());
-        if (file != null) {
-            try {
-                List<Note> notes = service.getCsvManager().importFromCsv(file.getAbsolutePath());
-                if (!notes.isEmpty()) {
-                    Note note = notes.get(0); // prend la premiere note du fichier
-                    service.saveOrUpdate(note);
-                    listeNotes.getItems().add(note);
-                }
-            } catch (CsvException e) {
-                e.printStackTrace();
+        if (file == null) return;
+
+        try {
+            List<Note> notes = service.getCsvManager().importFromCsv(file.getAbsolutePath());
+
+            if (!notes.isEmpty()) {
+                Note note = notes.get(0);
+                note.setId(null);
+
+                service.saveOrUpdate(note);
+                mainController.refreshNotes(service.getAllNotes().toList());
+
             }
+
+        } catch (CsvException e) {
+            e.printStackTrace();
         }
-        mainController.refreshNotes(service.getAllNotes().toList());
     }
 
 

@@ -51,12 +51,12 @@ public class MainController {
         // Recherche dynamique
         //on filtre toutes les notes et on ne garde que celles avec le texte qu on veut
         recherche.textProperty().addListener((obs, oldText, newText) -> {
-            notesObservable.setAll(
-                    service.getAllNotes()
-                            .filter(n -> n.getTitle() != null &&
-                                    n.getTitle().toLowerCase().contains(newText.toLowerCase()))
-                            .collect(Collectors.toList())
-            );
+            List<Note> filtered = service.getAllNotes().toList().stream()
+                    .filter(n -> n.getTitle() != null &&
+                            n.getTitle().toLowerCase().contains(newText.toLowerCase()))
+                    .collect(Collectors.toList());
+
+            notesObservable.setAll(filtered);
         });
 
         //double clique sur une note pour l editer
@@ -111,17 +111,18 @@ public class MainController {
     }
 
     public void filterByTag(String tag) {
-        notesObservable.setAll(
-                service.getAllNotes()
-                        .filter(n -> n.getTags().contains(tag))
-                        .collect(Collectors.toList())
-        );
+        List<Note> filtered = service.getAllNotes().toList().stream()
+                .filter(n -> n.getTags().contains(tag))
+                .collect(Collectors.toList());
+
+        notesObservable.setAll(filtered);
     }
+
 
 
     @FXML
     private void onAfficherTout() {
-        notesObservable.setAll(service.getAllNotes().collect(Collectors.toList()));
+        notesObservable.setAll(service.getAllNotes().toList());
     }
 
     @FXML

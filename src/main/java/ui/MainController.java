@@ -86,7 +86,7 @@ public class MainController {
 
     @FXML
     public void onNouvelleNote() {
-        //creee la note et la recupere
+        //creee la note et la recupere et le hashset vide pour les tags et le contenu vide
         Note note = service.createNote("Nouvelle note", "", new HashSet<>());
 
         if (note != null) {

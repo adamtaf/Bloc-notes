@@ -47,6 +47,7 @@ public class EditionController {
                 champTag.setText(tag);
             }
         });
+        //listener pour mettre a jour la note a chaque changement de texte
         champTitre.textProperty().addListener((obs, oldV, newV) -> {
             note.setTitle(newV);
         });

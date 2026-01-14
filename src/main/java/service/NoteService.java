@@ -23,6 +23,7 @@ public class NoteService {
     private final CsvManager csvManager;
     private final HibernateNoteDAO hibernateDao;
     private final NoteClient networkClient;
+    //pour l interface et la notifier automatiques des changements de valeurs
     private final ObservableList<Note> notesObservable = FXCollections.observableArrayList();
 
 
@@ -43,11 +44,12 @@ public class NoteService {
         Transaction tx = null;
         Note savedNote = null;
 
-        //session Hibernate pour creer ou mettre a jour la note
+        //session Hibernate(canal de communication avec la bdd qui va etre ouvert et lire ajouter des donner en bdd...) pour creer ou mettre a jour la note
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
         tx = session.beginTransaction();
 
         // merge gere les nouvelles notes et celles deja existantes
+            //met a jour et pas seulement creer
         savedNote = (Note) session.merge(note);
 
         tx.commit();
@@ -141,6 +143,7 @@ public class NoteService {
 
     private volatile boolean needsSave = false; //pour savoir si on a des changement a sauvegarder ou nn
     //volatile pour que les changements soient visibles par les threads
+    //chaque thread pourrait garder sa propre copie de needsSave et ca poserait pb donc on le met en volatile qui va permettre a tt les threads de voir la meme valeur en temps reel
 
     public void markDirty() {
         needsSave = true;
@@ -181,7 +184,7 @@ public class NoteService {
     public Set<String> getAllTags() { //pour recuperer tous les tags existants
         return getAllNotes() //stream pour les notes
                 .flatMap(n -> n.getTags().stream())
-                //on prend le tag de chaque note et on les mets dans un seul flux(flatmap)
+                //on prend le tag de chaque note et on les mets dans un seul flux(flatmap) car on obtient beacoup de stream don on les regrp en un
                 .collect(Collectors.toSet()); //collecter les elements dans un set
     }
 

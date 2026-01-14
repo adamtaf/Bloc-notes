@@ -10,6 +10,7 @@ public class AutoSaveWorker implements Runnable {
     private final NoteService service;
     private final HibernateNoteDAO hibernateDao;
     private final long intervalMillis;
+    //atomicboolean car plusieurs threads peuvent acceder a cette variable et donc on assure la coherence
     private final AtomicBoolean running = new AtomicBoolean(true);
 
     public AutoSaveWorker(NoteService service, HibernateNoteDAO hibernateDao, long intervalMillis) {
@@ -27,7 +28,7 @@ public class AutoSaveWorker implements Runnable {
                     note.getLock().lock();
                     try {
                         if (note.isDirty()) {
-                            service.saveOrUpdate(note);  //sauvegarde dans hibernate et CSV
+                            service.saveOrUpdate(note);  //sauvegarde dans hibernate et csv
                             note.setDirty(false);
                         }
                     } finally {

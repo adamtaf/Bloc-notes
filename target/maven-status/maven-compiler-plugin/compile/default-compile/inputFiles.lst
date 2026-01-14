@@ -1,19 +1,19 @@
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\dao\CsvManager.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\dao\HibernateNoteDAO.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\dao\HibernateUtil.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\exceptions\CsvException.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\exceptions\FileCorruptedException.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\exceptions\InvalidNoteException.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\exceptions\NoteNotFoundException.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\Main.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\model\Note.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\network\ClientHandler.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\network\NoteClient.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\network\NoteServer.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\service\NoteService.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\threading\AutoSaveWorker.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\ui\CsvController.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\ui\EditionController.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\ui\FilterController.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\ui\MainController.java
-C:\Users\Windows\IdeaProjects\Application de Gestion de Notes Personnelles\src\main\java\ui\NotesApp.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/Main.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/dao/CsvManager.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/dao/HibernateNoteDAO.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/dao/HibernateUtil.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/exceptions/CsvException.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/exceptions/FileCorruptedException.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/exceptions/InvalidNoteException.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/exceptions/NoteNotFoundException.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/model/Note.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/network/ClientHandler.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/network/NoteClient.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/network/NoteServer.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/service/NoteService.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/threading/AutoSaveWorker.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/ui/CsvController.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/ui/EditionController.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/ui/FilterController.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/ui/MainController.java
+/Users/adam/Documents/JAVA/Bloc-notes/src/main/java/ui/NotesApp.java

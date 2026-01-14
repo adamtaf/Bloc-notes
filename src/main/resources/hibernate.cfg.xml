@@ -10,7 +10,7 @@
         <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/Bloc_note?useSSL=false&amp;serverTimezone=UTC</property>
         <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.connection.password">AdaM1972</property>
+        <property name="hibernate.connection.password"></property>
 
         <!-- JDBC connection pool (built-in) -->
         <property name="hibernate.connection.pool_size">5</property>

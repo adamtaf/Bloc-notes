@@ -200,6 +200,7 @@ public class CsvManager {
             field = field.replace("\"", "\"\"");
             return "\"" + field + "\"";
             //expl: je suis "adam", ca devient "je suis ""adam"""
+            //ou bonjour;adam devient "bonjour;adam"
         }
         return field;
     }
@@ -273,7 +274,7 @@ public class CsvManager {
             //s assurer que les dossiers parents existent sinn on les creer auto
             Files.createDirectories(destPath.getParent());
 
-            //ecrire ligne par ligne
+            //ecrire ligne par ligne si le fichier n existe pas on le cree
             try (BufferedWriter writer = Files.newBufferedWriter(destPath)) {
                 //ecrire l en tete
                 writer.write(CSV_HEADER);

@@ -19,6 +19,8 @@
             <Button text="Tout afficher" onAction="#onAfficherTout"/>
             <Button text="📂 Import / Export CSV" onAction="#onOpenImportExportScene"/>
 
+            <Label fx:id="lblStatus" text="Auto-save actif" style="-fx-font-size: 13px; -fx-text-fill: green;"/>
+
             <TextField fx:id="recherche" promptText="Rechercher une note..."/>
 
         </HBox>

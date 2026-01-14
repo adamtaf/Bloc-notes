@@ -22,6 +22,12 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
+import java.util.Optional;
+
+
 
 public class MainController {
 
@@ -84,6 +90,7 @@ public class MainController {
         Note note = service.createNote("Nouvelle note", "", new HashSet<>());
 
         if (note != null) {
+            showInfo("Nouvelle note créée avec succès !");
             openEditor(note);
         }
     }
@@ -92,6 +99,7 @@ public class MainController {
     @FXML
     public void onSauvegarde() throws CsvException {
         service.getCsvManager().writeAllNotes(service.getAllNotes().toList());
+        showInfo("Auto-save actif. Pas besoin de sauvegarder manuellement.");
     }
 
 
@@ -158,5 +166,26 @@ public class MainController {
     public void refreshNotes(List<Note> nouvellesNotes) {
         notesObservable.setAll(nouvellesNotes);
     }
+
+
+    //alertes
+    private void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private boolean showConfirmation(String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("Action requise");
+        alert.setContentText(message);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
+    }
+
 
 }

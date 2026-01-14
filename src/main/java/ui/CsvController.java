@@ -2,6 +2,7 @@ package ui;
 
 import exceptions.CsvException;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.stage.FileChooser;
@@ -53,7 +54,7 @@ public class CsvController {
                 mainController.refreshNotes(service.getAllNotes().toList());
 
             }
-
+            showInfo("Note importée avec succès !");
         } catch (CsvException e) {
             e.printStackTrace();
         }
@@ -72,6 +73,7 @@ public class CsvController {
         if (file != null) {
             try {
                 service.getCsvManager().exportToCsv(List.of(selected), file.getAbsolutePath());
+                showInfo("Note exportée avec succès !");
             } catch (CsvException e) {
                 e.printStackTrace();
             }
@@ -81,4 +83,13 @@ public class CsvController {
         Stage stage = (Stage) listeNotes.getScene().getWindow();
         stage.close(); // revient a l accueil
     }
+
+    private void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 }

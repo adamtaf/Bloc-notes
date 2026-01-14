@@ -11,6 +11,12 @@ import javafx.stage.Stage;
 import model.Note;
 import service.NoteService;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
+import java.util.Optional;
+
+
 import java.util.HashSet;
 
 public class EditionController {
@@ -57,18 +63,25 @@ public class EditionController {
     private void onSauvegarde() throws Exception {
         service.updateNote(note.getId(), champTitre.getText(), zoneContenu.getText(), note.getTags());
         listeTags.setItems(FXCollections.observableArrayList(service.getAllTags()));
+        showInfo("Auto-save actif. Pas besoin de sauvegarder manuellement.");
     }
 
 
     @FXML
     private void onSupprimer() {
+        boolean confirm = showConfirmation("Voulez-vous vraiment supprimer cette note ?");
+        if (!confirm) return;
+
         try {
             service.deleteNote(note.getId());
+            showInfo("Note supprimée avec succès !");
             onRetour();
         } catch (Exception e) {
             e.printStackTrace();
+            showInfo("Erreur lors de la suppression !");
         }
     }
+
 
     @FXML
     private void onRetour() {
@@ -99,7 +112,8 @@ public class EditionController {
             }
 
             champTag.clear();
-            onSauvegarde();
+            service.markDirty(); // pour signaler qu'il y a un changement
+
         }
     }
 
@@ -108,8 +122,27 @@ public class EditionController {
         String tag = listeTags.getSelectionModel().getSelectedItem();
         if (tag != null) {
             note.getTags().remove(tag);
-            onSauvegarde();
+            service.markDirty(); // pour signaler qu'il y a un changement
+
         }
+    }
+
+    private void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private boolean showConfirmation(String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("Action requise");
+        alert.setContentText(message);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
     }
 
 
